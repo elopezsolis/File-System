@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 /**
  * Manages the Bit Map, 1 represents an used space, 0 an empty one
+ * BitMap is managed by using a 64 bit long.
  */
 public class Bitmap {
     long bitMap;
@@ -61,6 +62,9 @@ public class Bitmap {
             count++;
         }
         return str;
+    }
+    public void printBMap(){
+        System.out.println(this.toString());
     }
 
 }
