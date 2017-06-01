@@ -11,9 +11,10 @@ public class Bitmap {
         emptySlots = new ArrayList<>();
     }
     public static void main(String[] args){
-        Bitmap map = new Bitmap();
-        map.bitMap = 1048575;
-        map.findEmtpy();
+        Bitmap bitMap = new Bitmap();
+        bitMap.bitMap = 0;
+        bitMap.makeOne(63);
+        System.out.println( bitMap.toString());
     }
 
     /**
@@ -22,30 +23,44 @@ public class Bitmap {
      * @param bitNumber - bit number that will be made 1.
      */
     public void makeOne(int bitNumber){
-        long temp = (long)Math.pow(2,bitNumber);
+        long temp;
+        if(bitNumber == 63)
+            temp = ((long)Math.pow(2,bitNumber)* (-1)) -1;
+        else
+            temp = (long)Math.pow(2,bitNumber);
         bitMap = bitMap | temp;
-        System.out.println("bitMap " + bitMap);
     }
     public void makeZero(int bitNumber){
         long temp =  (long)Math.pow(2,bitNumber);
         bitMap = bitMap ^ temp;
-        System.out.println("xor" + bitMap);
     }
-    public void findEmtpy(){
+    public void findEmpty(){
         long current = bitMap;
         long newNum = 1;
         int count =0;
         emptySlots = new ArrayList<>();
         while(count <64) {
-            System.out.print("new" + newNum);
             long temp = (current | newNum);
             if(current != temp) {
                 emptySlots.add(count);
                 current = temp;
             }
             newNum = (newNum << 1) +1;
-            System.out.println(" count "+ count + "temp " + temp  );
             count++;
         }
     }
+    public String toString(){
+        long temp = this.bitMap;
+        int count = 1;
+        String str = String.format("%2d ",0);
+        while(count <= 64){
+            str = str + (temp & 0x1);
+            temp = temp >>> 1;
+            if(count %8 == 0 && count !=64)
+                str+= "\n" + String.format("%2d ",count);
+            count++;
+        }
+        return str;
+    }
+
 }
