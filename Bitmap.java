@@ -16,6 +16,8 @@ public class Bitmap {
         bitMap.bitMap = 0;
         bitMap.makeOne(63);
         System.out.println( bitMap.toString());
+        bitMap.makeZero(63);
+        System.out.println( bitMap.toString());
     }
 
     /**
@@ -32,7 +34,11 @@ public class Bitmap {
         bitMap = bitMap | temp;
     }
     public void makeZero(int bitNumber){
-        long temp =  (long)Math.pow(2,bitNumber);
+        long temp;
+        if(bitNumber == 63)
+            temp = ((long)Math.pow(2,bitNumber)* (-1)) -1;
+        else
+            temp = (long)Math.pow(2,bitNumber);
         bitMap = bitMap ^ temp;
     }
     public void findEmpty(){

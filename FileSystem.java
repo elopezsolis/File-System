@@ -11,13 +11,21 @@ public class FileSystem {
 
     public static void main(String[] args){
         FileSystem fs = new FileSystem();
-        fs.insert(new iNode("name3",60));
-        fs.insert(new iNode("name2",2));
         fs.insert(new iNode("name1",2));
+        fs.insert(new iNode("name2",2));
+        fs.insert(new iNode("name3",60));
         fs.printFS();
         fs.bMap.printBMap();
         System.out.println(fs.bMap.emptySlots);
         System.out.println(fs.totalSize);
+        fs.delete("name3");
+        fs.printFS();
+        fs.bMap.printBMap();
+        fs.bMap.findEmpty();
+        System.out.println(fs.bMap.emptySlots);
+        System.out.println(fs.totalSize);
+
+
     }
     public FileSystem(){
         totalSize = 64;
@@ -28,11 +36,37 @@ public class FileSystem {
             fileAllocAr[i] = -2;
         }
     }
+    public boolean delete(String name){
+        int index =0;
+        while(!name.equals(iNodeList.get(index).getName())){
+            index++;
+            if(index >= iNodeList.size())
+                return false;
+        }
 
+        iNode temp = this.iNodeList.get(index);
+        int num = temp.getStart();
+        int contents = fileAllocAr[num];
+        this.bMap.makeZero(num);
+
+        num = contents;
+
+        //Not depend on size b 
+        while(contents !=-1){
+            contents = fileAllocAr[num];
+            this.bMap.makeZero(num);
+            num = contents;
+        }
+        this.totalSize +=temp.getSize();
+        this.iNodeList.remove(index);
+
+        return true;
+
+    }
     /**
      * Function inserts a node if there's enough size in the Allocation Array to add the file
      * Calls the bitMap to see where the empty spots are located.
-     * @param node - 
+     * @param node -
      * @return
      */
     public boolean insert(iNode node){
