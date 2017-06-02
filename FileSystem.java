@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * This class Implements a file System
@@ -10,57 +11,72 @@ public class FileSystem {
     int totalSize;
 
     public static void main(String[] args){
+        Scanner in = new Scanner(System.in);
         FileSystem fs = new FileSystem();
-        fs.insert(new iNode("name1",2));
-        fs.insert(new iNode("name2",2));
-        fs.insert(new iNode("name3",60));
-        fs.printFS();
-        fs.bMap.printBMap();
-        System.out.println(fs.bMap.emptySlots);
-        System.out.println(fs.totalSize);
-        fs.delete("name3");
-        fs.printFS();
-        fs.bMap.printBMap();
-        fs.bMap.findEmpty();
-        System.out.println(fs.bMap.emptySlots);
-        System.out.println(fs.totalSize);
+        String usrIn[] = {""};
 
+        while(!usrIn[0].equals("exit")){
+            usrIn =  in.nextLine().split(" ");
+            switch (usrIn[0]){
+                case("put"):
+                    if(usrIn.length == 3) {
+                        try {
+                            if (fs.findFile(usrIn[1]) != -1) {
+                                System.out.println("Filename already exists");
+                            } else if (!fs.insert(new iNode(usrIn[1], Integer.parseInt(usrIn[2]))))
+                                System.out.println("File " + usrIn[1] + " not inserted");
+                        } catch (NumberFormatException ex) {
+                            System.out.println("Size must be a number");
+                        }
+                    }else
+                        System.out.println("Missing commands");
+                    break;
+                case("del"):
+                    if(usrIn.length ==2) {
+                        if (!fs.delete(usrIn[1]))
+                            System.out.println("File name not found");
+                    }else
+                        System.out.println("Missing commands");
+                    break;
+                case("bitmap"):
+                    fs.bMap.printBMap();
+                    break;
+                case("inodes"):
+                    System.out.println(fs.toString());
+                    break;
+            }
 
+        }
     }
     public FileSystem(){
         totalSize = 64;
         fileAllocAr = new int[totalSize];
-        iNodeList = new ArrayList();
+        iNodeList = new ArrayList<>();
         bMap = new Bitmap();
         for(int i=0;i<fileAllocAr.length;i++){
             fileAllocAr[i] = -2;
         }
     }
     public boolean delete(String name){
-        int index =0;
-        while(!name.equals(iNodeList.get(index).getName())){
-            index++;
-            if(index >= iNodeList.size())
-                return false;
-        }
-
-        iNode temp = this.iNodeList.get(index);
-        int num = temp.getStart();
-        int contents = fileAllocAr[num];
-        this.bMap.makeZero(num);
-
-        num = contents;
-
-        //Not depend on size b 
-        while(contents !=-1){
-            contents = fileAllocAr[num];
+        int index = this.findFile(name);
+        if(index != -1 ) {
+            iNode temp = this.iNodeList.get(index);
+            int num = temp.getStart();
+            int contents = fileAllocAr[num];
             this.bMap.makeZero(num);
-            num = contents;
-        }
-        this.totalSize +=temp.getSize();
-        this.iNodeList.remove(index);
 
-        return true;
+            num = contents;
+
+            while (contents != -1) {
+                contents = fileAllocAr[num];
+                this.bMap.makeZero(num);
+                num = contents;
+            }
+            this.totalSize += temp.getSize();
+            this.iNodeList.remove(index);
+            return true;
+        }
+        else return false;
 
     }
     /**
@@ -110,6 +126,19 @@ public class FileSystem {
             str += "\n";
         }
         return str;
+    }
+    public int findFile (String name){
+        if(totalSize == 64){
+            return -1;
+        }
+        int index =0;
+        while(!name.equals(iNodeList.get(index).getName())){
+            index++;
+
+            if(index >= iNodeList.size() )
+                return -1;
+        }
+        return index;
     }
     public void printFS(){
         System.out.println(this.toString());
