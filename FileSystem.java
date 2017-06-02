@@ -2,7 +2,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * This class Implements a file System
+ * This program Implements a File Allocation Array. It is managed by a bitmap which shows the empty slops with a 0.
+ * This program can insert files with a name and a size, it can delete files by their name, it cna display the bitMap,
+ * and it can display the current iNodes in the list with the corresponding links.
+ * -Checks for an invalid input in put, and delete.
+ * -Checks if the file is already in the FAT
+ * -Checks if the file exceeds the max FAT size
+ *
  */
 public class FileSystem {
     int[] fileAllocAr;
@@ -25,11 +31,8 @@ public class FileSystem {
                                 System.out.println("Filename already exists");
                             } else if (!fs.insert(new iNode(usrIn[1], Integer.parseInt(usrIn[2]))))
                                 System.out.println("File " + usrIn[1] + " not inserted");
-                        } catch (NumberFormatException ex) {
-                            System.out.println("Size must be a number");
-                        }
-                    }else
-                        System.out.println("Missing commands");
+                        } catch (NumberFormatException ex) { System.out.println("Size must be a number"); }
+                    }else System.out.println("Missing commands");
                     break;
                 case("del"):
                     if(usrIn.length ==2) {
@@ -45,7 +48,6 @@ public class FileSystem {
                     System.out.println(fs.toString());
                     break;
             }
-
         }
     }
     public FileSystem(){
@@ -57,6 +59,12 @@ public class FileSystem {
             fileAllocAr[i] = -2;
         }
     }
+
+    /**
+     * Deletes the iNode with the corresponding filename passed in and its links
+     * @param name node to delete
+     * @return true if node was deleted, false otherwise
+     */
     public boolean delete(String name){
         int index = this.findFile(name);
         if(index != -1 ) {
@@ -64,7 +72,6 @@ public class FileSystem {
             int num = temp.getStart();
             int contents = fileAllocAr[num];
             this.bMap.makeZero(num);
-
             num = contents;
 
             while (contents != -1) {
@@ -77,7 +84,6 @@ public class FileSystem {
             return true;
         }
         else return false;
-
     }
     /**
      * Function inserts a node if there's enough size in the Allocation Array to add the file
@@ -110,6 +116,10 @@ public class FileSystem {
             return true;
         }else return false;
     }
+
+    /**
+     * @return a String with all the iNodes in the FAT and their links
+     */
     public String toString(){
         String str = "";
         int val = 0;
@@ -127,6 +137,12 @@ public class FileSystem {
         }
         return str;
     }
+
+    /**
+     * Finds the indes of the file name passed in
+     * @param name - filename to find
+     * @return the index of the file if found, -1 otherwise
+     */
     public int findFile (String name){
         if(totalSize == 64){
             return -1;
