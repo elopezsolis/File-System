@@ -1,14 +1,20 @@
 /**
- * - the number -2 will be used as dummy value
+ * Class iNode represents a file
+ * this file contains
+ * - a name
+ * - starting block:
+ * - size
+ *
  */
 public class iNode {
     private String name;
     private int start;
     private int size;
+
     public iNode(String name,int size){
         this.name = name;
         this.size = size;
-        this.start = -2;
+        this.start = -2; //- the number -2 will be used as dummy value
     }
     public String getName() {
         return name;

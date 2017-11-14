@@ -2,19 +2,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * This program Implements a File Allocation Array. It is managed by a bitmap which shows the empty slops with a 0.
- * This program can insert files with a name and a size, it can delete files by their name, it cna display the bitMap,
- * and it can display the current iNodes in the list with the corresponding links.
+ * This program simulates a File Allocation Array.
+ * It is managed by a bitmap which shows the empty slops with a 0.
+ * This program can
+ * - insert files with a name and a size, it can
+ * - delete files by their name, it can display the bitMap,
+ * - display the current iNodes(files) in the list with the
+ * corresponding links.
  * -Checks for an invalid input in put, and delete.
  * -Checks if the file is already in the FAT
  * -Checks if the file exceeds the max FAT size
  *
  */
 public class FileSystem {
-    int[] fileAllocAr;
-    ArrayList<iNode> iNodeList;
-    Bitmap bMap;
-    int totalSize;
+    private int[] fileAllocAr;
+    private ArrayList<iNode> iNodeList;
+    private BitMap bMap;
+    private int totalSize;
 
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
@@ -50,11 +54,17 @@ public class FileSystem {
             }
         }
     }
+
+    /**
+     * Constructor creates a new file system that has 64 memory slots
+     * initializes the file allocation array, iNode list, and the
+     * bitMap.
+     */
     public FileSystem(){
         totalSize = 64;
         fileAllocAr = new int[totalSize];
         iNodeList = new ArrayList<>();
-        bMap = new Bitmap();
+        bMap = new BitMap();
         for(int i=0;i<fileAllocAr.length;i++){
             fileAllocAr[i] = -2;
         }
@@ -88,8 +98,8 @@ public class FileSystem {
     /**
      * Function inserts a node if there's enough size in the Allocation Array to add the file
      * Calls the bitMap to see where the empty spots are located.
-     * @param node -
-     * @return
+     * @param node - iNode to insert into file system
+     * @return false if it the node was not added.
      */
     public boolean insert(iNode node){
         //makes sure we will have space for the node
@@ -139,7 +149,7 @@ public class FileSystem {
     }
 
     /**
-     * Finds the indes of the file name passed in
+     * Finds the index of the file name passed in
      * @param name - filename to find
      * @return the index of the file if found, -1 otherwise
      */
